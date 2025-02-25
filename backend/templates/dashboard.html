@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Análisis de Productos Amazon</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">📊 Dashboard de Análisis de Productos Amazon</h1>
+
+        <!-- Métricas generales -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6 transition duration-300 ease-in-out transform hover:scale-105">
+                <h3 class="text-xl font-semibold mb-2 text-blue-600">💰 Precio Promedio</h3>
+                <p class="text-3xl font-bold text-gray-700">${{ "%.2f"|format(avg_price) }}</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 transition duration-300 ease-in-out transform hover:scale-105">
+                <h3 class="text-xl font-semibold mb-2 text-green-600">📈 Precio Máximo</h3>
+                <p class="text-3xl font-bold text-gray-700">${{ "%.2f"|format(max_price) }}</p>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6 transition duration-300 ease-in-out transform hover:scale-105">
+                <h3 class="text-xl font-semibold mb-2 text-red-600">📉 Precio Mínimo</h3>
+                <p class="text-3xl font-bold text-gray-700">${{ "%.2f"|format(min_price) }}</p>
+            </div>
+        </div>
+
+        <!-- Top 5 productos más caros y baratos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">🏆 Top 5 Productos Más Caros</h3>
+                <ul class="space-y-2">
+                    {% for product in top_expensive %}
+                        <li class="flex justify-between items-center">
+                            <span class="truncate" title="{{ product.title }}">{{ product.title[:50] }}{% if product.title|length > 50 %}...{% endif %}</span>
+                            <strong class="ml-2 text-green-600">${{ "%.2f"|format(product.price) }}</strong>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">💸 Top 5 Productos Más Baratos</h3>
+                <ul class="space-y-2">
+                    {% for product in top_cheap %}
+                        <li class="flex justify-between items-center">
+                            <span class="truncate" title="{{ product.title }}">{{ product.title[:50] }}{% if product.title|length > 50 %}...{% endif %}</span>
+                            <strong class="ml-2 text-red-600">${{ "%.2f"|format(product.price) }}</strong>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Gráfico de pastel de distribución de precios -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">📊 Distribución de Precios</h3>
+                <canvas id="pricePieChart"></canvas>
+            </div>
+            <!-- Gráfico de barras de cantidad de productos por rango de precio -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <h3 class="text-xl font-semibold mb-4 text-gray-800">📊 Cantidad de Productos por Rango de Precio</h3>
+                <canvas id="priceBarChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gráfico de pastel para la distribución de precios
+        var ctxPie = document.getElementById('pricePieChart').getContext('2d');
+        var pricePieChart = new Chart(ctxPie, {
+            type: 'pie',
+            data: {
+                labels: ['0-50', '51-100', '101-150', '151-200', '201+'],
+                datasets: [{
+                    label: 'Cantidad de Productos',
+                    data: { price_distribution, tojson },
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9966FF'],
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { position: 'bottom' },
+                    title: { display: true, text: 'Distribución de Productos por Precio' }
+                }
+            }
+        });
+
+        // Gráfico de barras para la cantidad de productos por rango de precio
+        var ctxBar = document.getElementById('priceBarChart').getContext('2d');
+        var priceBarChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: ['0-50', '51-100', '101-150', '151-200', '201+'],
+                datasets: [{
+                    label: 'Cantidad de Productos',
+                    data: { price_distribution, tojson },
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9966FF'],
+                    borderColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4CAF50', '#9966FF'],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: { display: true, text: 'Cantidad de Productos por Rango de Precio' }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

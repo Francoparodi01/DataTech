@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Productos de Amazon{% endblock %}
+
+{% block content %}
+<h2 class="text-2xl font-bold mb-4">Productos de Amazon</h2>
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for product in products %}
+    <div class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+        <img src="{{ product.image_url }}" alt="{{ product.title }}" class="w-full h-48 object-cover mb-4 rounded">
+        <h3 class="text-lg font-semibold mb-2 line-clamp-2">{{ product.title }}</h3>
+        <p class="text-gray-600 mb-2 font-bold">Precio: ${{ product.price }}</p>
+        <a href="{{ product.link }}" target="_blank" class="text-blue-500 hover:underline mt-2 inline-block">Ver en Amazon</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
