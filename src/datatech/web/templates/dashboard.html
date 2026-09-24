@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DataTech Price Intelligence</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #f5f5f5; color: #171717; }
+    main { max-width: 1200px; margin: 0 auto; padding: 32px 20px; }
+    .card { background: white; border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 12px #00000010; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e5e5; }
+    th { font-size: 13px; text-transform: uppercase; color: #666; }
+    a { color: inherit; }
+    .muted { color: #666; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>DataTech · Price Intelligence</h1>
+    <p class="muted">Snapshots históricos, análisis de precios y Deal Score.</p>
+    {% if not configured %}<p><strong>MongoDB no está configurado.</strong> Definí MONGODB_URI.</p>{% endif %}
+  </div>
+  <div class="card">
+    <h2>Últimos productos</h2>
+    <table>
+      <thead><tr><th>Fuente</th><th>Producto</th><th>Precio</th><th>Captura</th></tr></thead>
+      <tbody>
+      {% for product in products %}
+        <tr>
+          <td>{{ product.source }}</td>
+          <td><a href="{{ product.url }}" target="_blank" rel="noreferrer">{{ product.title }}</a></td>
+          <td>{{ product.currency }} {{ "%.2f"|format(product.price) }}</td>
+          <td>{{ product.captured_at }}</td>
+        </tr>
+      {% else %}
+        <tr><td colspan="4">Todavía no hay snapshots.</td></tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</main>
+</body>
+</html>

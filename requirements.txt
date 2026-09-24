@@ -1,6 +1,0 @@
-scrapy
-scrapy-selenium
-selenium
-webdriver-manager
-pymongo
-fpdf
