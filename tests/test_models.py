@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 import pytest
 
@@ -13,7 +13,7 @@ def test_snapshot_normalizes_title_and_serializes():
         price=1000,
         currency="ARS",
         url="https://example.test/item",
-        captured_at=datetime(2026, 9, 24, tzinfo=timezone.utc),
+        captured_at=datetime(2026, 9, 24, tzinfo=UTC),
     )
     assert snapshot.normalized_title == "placa grafica rtx 5070"
     assert snapshot.to_document()["price"] == 1000.0

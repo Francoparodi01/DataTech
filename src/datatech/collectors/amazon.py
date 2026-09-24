@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from urllib.parse import urljoin
 
 import requests
@@ -53,8 +53,13 @@ class AmazonHtmlCollector:
             }
         )
 
-    def parse_page(self, html: str, *, captured_at: datetime | None = None) -> list[ProductSnapshot]:
-        captured_at = captured_at or datetime.now(timezone.utc)
+    def parse_page(
+        self,
+        html: str,
+        *,
+        captured_at: datetime | None = None,
+    ) -> list[ProductSnapshot]:
+        captured_at = captured_at or datetime.now(UTC)
         soup = BeautifulSoup(html, "html.parser")
         snapshots: list[ProductSnapshot] = []
         for card in soup.select('[data-component-type="s-search-result"][data-asin]'):
@@ -86,7 +91,7 @@ class AmazonHtmlCollector:
     def search(self, query: str, *, max_pages: int = 1) -> list[ProductSnapshot]:
         if not query.strip():
             raise ValueError("query cannot be empty")
-        captured_at = datetime.now(timezone.utc)
+        captured_at = datetime.now(UTC)
         snapshots: list[ProductSnapshot] = []
         for page in range(1, max_pages + 1):
             response = self.session.get(

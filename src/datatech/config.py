@@ -19,7 +19,7 @@ class Settings:
     flask_port: int
 
     @classmethod
-    def from_env(cls) -> "Settings":
+    def from_env(cls) -> Settings:
         return cls(
             mongodb_uri=os.getenv("MONGODB_URI") or None,
             mongodb_database=os.getenv("MONGODB_DATABASE", "datatech"),

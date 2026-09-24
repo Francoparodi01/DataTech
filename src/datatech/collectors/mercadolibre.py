@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from typing import Iterable
+from collections.abc import Iterable
+from datetime import UTC, datetime
 
 import requests
 
@@ -24,15 +24,23 @@ class MercadoLibreCollector:
         self.site_id = site_id.upper()
         self.timeout = timeout
         self.session = session or requests.Session()
-        self.session.headers.update({"User-Agent": user_agent, "Accept": "application/json"})
+        self.session.headers.update(
+            {"User-Agent": user_agent, "Accept": "application/json"}
+        )
 
-    def search(self, query: str, *, max_pages: int = 1, page_size: int = 50) -> list[ProductSnapshot]:
+    def search(
+        self,
+        query: str,
+        *,
+        max_pages: int = 1,
+        page_size: int = 50,
+    ) -> list[ProductSnapshot]:
         if not query.strip():
             raise ValueError("query cannot be empty")
         if max_pages < 1:
             raise ValueError("max_pages must be >= 1")
         page_size = max(1, min(page_size, 50))
-        captured_at = datetime.now(timezone.utc)
+        captured_at = datetime.now(UTC)
         snapshots: list[ProductSnapshot] = []
 
         for page in range(max_pages):

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from flask import Flask, jsonify, render_template, request
 
@@ -28,12 +28,17 @@ def create_app(
             repository.ping()
             return jsonify({"status": "ok", "database": "ok"})
         except Exception as exc:  # pragma: no cover - depends on external DB
-            return jsonify({"status": "degraded", "database": "unavailable", "error": str(exc)}), 503
+            payload = {"status": "degraded", "database": "unavailable", "error": str(exc)}
+            return jsonify(payload), 503
 
     @app.get("/")
     def dashboard():
         products = repository.latest_products(limit=100) if repository else []
-        return render_template("dashboard.html", products=products, configured=repository is not None)
+        return render_template(
+            "dashboard.html",
+            products=products,
+            configured=repository is not None,
+        )
 
     @app.get("/api/products")
     def products():
@@ -51,7 +56,7 @@ def create_app(
     def deal(source: str, product_id: str):
         if repository is None:
             return jsonify({"error": "database_not_configured"}), 503
-        since = datetime.now(timezone.utc) - timedelta(days=90)
+        since = datetime.now(UTC) - timedelta(days=90)
         history = repository.history(source, product_id, since=since)
         if not history:
             return jsonify({"error": "not_found"}), 404

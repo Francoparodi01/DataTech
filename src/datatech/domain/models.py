@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from datatech.domain.normalization import normalize_title
@@ -19,7 +19,7 @@ class ProductSnapshot:
     seller_id: str | None = None
     rating: float | None = None
     review_count: int | None = None
-    captured_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    captured_at: datetime = field(default_factory=lambda: datetime.now(UTC))
 
     def __post_init__(self) -> None:
         if not self.source.strip():
@@ -56,10 +56,10 @@ class ProductSnapshot:
         }
 
     @classmethod
-    def from_document(cls, document: dict[str, Any]) -> "ProductSnapshot":
+    def from_document(cls, document: dict[str, Any]) -> ProductSnapshot:
         captured_at = document["captured_at"]
         if captured_at.tzinfo is None:
-            captured_at = captured_at.replace(tzinfo=timezone.utc)
+            captured_at = captured_at.replace(tzinfo=UTC)
         return cls(
             source=document["source"],
             source_product_id=document["source_product_id"],

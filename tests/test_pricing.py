@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from datatech.analytics.deals import assess_deal
 from datatech.analytics.pricing import summarize_price_history
@@ -13,7 +13,7 @@ def _snapshot(day: int, price: float) -> ProductSnapshot:
         price=price,
         currency="USD",
         url="https://example.test/gpu",
-        captured_at=datetime(2026, 9, 1, tzinfo=timezone.utc) + timedelta(days=day),
+        captured_at=datetime(2026, 9, 1, tzinfo=UTC) + timedelta(days=day),
     )
 
 
